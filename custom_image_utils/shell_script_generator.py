@@ -111,11 +111,13 @@ function main() {{
 
   local cert_args=""
   local num_src_certs="0"
+  metadata_arg="{metadata_flag}"
   if [[ -n '{trusted_cert}' ]] && [[ -f '{trusted_cert}' ]]; then
     # build tls/ directory from variables defined near the header of
     # the examples/secure-boot/create-key-pair.sh file
 
     eval "$(bash examples/secure-boot/create-key-pair.sh)"
+    metadata_arg="${{metadata_arg}},public_secret_name=${{public_secret_name}},private_secret_name=${{private_secret_name}},secret_project=${{secret_project}},secret_version=${{secret_version}}"
 
     # by default, a gcloud secret with the name of efi-db-pub-key-042 is
     # created in the current project to store the certificate installed
@@ -209,7 +211,7 @@ function main() {{
       {accelerator_flag} \
       {service_account_flag} \
       --scopes=cloud-platform \
-      {metadata_flag} \
+      ${{metadata_arg}} \
       --metadata-from-file startup-script=startup_script/run.sh )
 
   touch /tmp/{run_id}/vm_created
